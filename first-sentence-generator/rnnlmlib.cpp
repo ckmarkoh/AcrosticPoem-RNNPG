@@ -13,6 +13,8 @@
 #include <assert.h>
 #include "rnnlmlib.h"
 
+#define  exp10(arg)  exp(M_LN10 * arg)
+
 ///// fast exp() implementation
 static union{
     double d;

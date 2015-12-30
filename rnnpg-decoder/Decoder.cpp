@@ -64,28 +64,11 @@ int Decoder::decode(vector<string> &prevSents, int stackSize, int K, vector<stri
 			rnnpg->computeNetContext(curItem->word.c_str(), NULL, curItem->hiddenNeu, contextHiddenNeu[curItem->posInSent],
 					newHiddenNeu, nextWordProbs);
 
-			// cout << "next words size " << nextWordProbs.size() << endl;
-//			TransList *transList = NULL;
-//			if(transTable != NULL)
-//			{
-//				// transList = transTable->getTransList(lwords[i].c_str());
-//				if(transList == NULL)
-//				{
-//					cerr << lwords[i] << " not found in the translation table! impossible!!!" << endl;
-//					assert(transList != NULL);
-//				}
-//			}
 
 			for(k = 0; k < (int)nextWordProbs.size(); k ++)
 			{
 				string nxWd = nextWordProbs[k].first;
 				double nxProb = nextWordProbs[k].second;
-
-//				if(transTable != NULL)
-//				{
-//					if(!transList->contains(nxWd.c_str()))
-//						continue;
-//				}
 
 				StackItem *nxItem = new StackItem(hiddenSize);
 				nxItem->cost = curItem->cost + log(nxProb);
@@ -117,7 +100,6 @@ int Decoder::decode(vector<string> &prevSents, int stackSize, int K, vector<stri
 	for(i = 0; i < stacks[senLen]->size(); i ++)
 	{
 		StackItem *curItem = stacks[senLen]->get(i);
-//		cout << curItem->posInSent << endl;
 		// get generation options
 		rnnpg->computeNetContext(curItem->word.c_str(), "</s>", curItem->hiddenNeu, contextHiddenNeu[curItem->posInSent],
 				newHiddenNeu, nextWordProbs);
@@ -163,7 +145,6 @@ int Decoder::decode(const char* infile, const char* outfile, int stackSize, int 
 		split(buf, "\t\r\n", sents);
 		decode(sents, stackSize, K, topSents);
 //		cout << "decoding done!" << endl;
-//		cout << topSents.size() << endl;
 		int i;
 		for(i = 0; i < (int)topSents.size(); i ++)
 		{
@@ -322,17 +303,11 @@ int Decoder::decodeTransTable(vector<string> &prevSents, int stackSize, int K, v
 					split(trans[t].first, " ", curWords);
 					if(repeatGT(curItem->curTrans, second, 2))
 						continue;
-					// cout << "cur words" << endl;
-					// printsvec(curWords);
-
-					// cout << "prev word " << curItem->word << endl;
-					// cout << "curItem posInSent " << curItem->posInSent << endl;
 
 					// update feature weights
 					double rnnLogProb = rnnpg->computeNetContext(curItem->word.c_str(), curItem->posInSent, curWords, curItem->hiddenNeu,
 							contextHiddenNeu, newHiddenNeu);
 
-					// cout << "rnnLogProb = " << rnnLogProb << endl;
 
 //					double invertedPhraseProb = trans[t].second;
 //					// double invertedPhraseLogProb = log(invertedPhraseProb == 0 ? 1e-15 : invertedPhraseProb);
@@ -466,7 +441,6 @@ int Decoder::decodeTransTable(const char* infile, const char* outfile, int stack
 			buf[-- len] = 0;
 
 //		cout << "decoding done!" << endl;
-//		cout << topSents.size() << endl;
 		int i, j;
 		for(i = 0; i < (int)topSents.size(); i ++)
 		{

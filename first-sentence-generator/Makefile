@@ -5,8 +5,10 @@ OBJS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 CC = g++
 CPPFLAGS = -O3 -funroll-loops -ffast-math -finline-functions -Wall -Winline -pipe -DKENLM_MAX_ORDER=6
 
-INCLUDES = -I/afs/inf.ed.ac.uk/user/s12/s1270921/usr/kenlm
-LDFLAGS = -L/afs/inf.ed.ac.uk/user/s12/s1270921/usr/kenlm/lib -lkenlm
+#INCLUDES = -I/afs/inf.ed.ac.uk/user/s12/s1270921/usr/kenlm
+#LDFLAGS = -L/afs/inf.ed.ac.uk/user/s12/s1270921/usr/kenlm/lib -lkenlm
+
+LDFLAGS = -lkenlm  -lbz2 -lboost_thread-mt -lboost_system -llzma -ljpeg -lz
 
 all : $(OUT_EXEC)
 	rm *.o

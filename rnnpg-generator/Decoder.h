@@ -17,6 +17,8 @@
 #include <utility>
 #include <map>
 #include <set>
+#include <fstream>
+#include <queue> 
 using namespace std;
 
 #include "RNNPG.h"
@@ -151,6 +153,7 @@ public:
 	void push(StackItem *sitem)
 	{
 		pq.push(make_pair(sitem->cost, curSize));
+    cout<< "current seq:"<<sitem->curTrans << ",cost:"<<sitem->cost << endl;
 		transIndex[sitem->curTrans] = curSize;
 		arr[curSize++] = sitem;
 	}
@@ -266,6 +269,8 @@ public:
 		interpolateWeight = 0;
 
 		useToneRhythm = false;
+    
+    //loadAcrosticWord("acrostic.txt");
 	}
 
 	int decode(vector<string> &prevSents, int stackSize, int K, vector<string> &topSents);
@@ -297,7 +302,15 @@ public:
 		for(int i = 0; i < MAX_SEN_LEN; i ++)
 			delete []contextHiddenNeu[i];
 	}
+
+  void loadAcrosticWord(string s){ //TODO Add
+    strAcrosticWords.clear();
+    strAcrosticWords.push_back(s);
+    trim(strAcrosticWords[0]);
+  }
+
 private:
+  vector<string> strAcrosticWords; //TODO Add
 	RNNPG *rnnpg;
 	TranslationTable *transTable;
 	int hiddenSize;

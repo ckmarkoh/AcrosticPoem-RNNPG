@@ -1,5 +1,9 @@
 #!/bin/sh
 
+
+# convert the verbose format to human readable format
+#java -jar rnn_poem_post_precessor.jar $outputF $outstdF
+
 keywordsF=../MISC/rand.keywords.30
 outputF=$keywordsF.poems.out
 outstdF=$keywordsF.poems.std

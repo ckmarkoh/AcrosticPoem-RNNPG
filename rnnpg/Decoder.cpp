@@ -398,7 +398,6 @@ int Decoder::decodeTransTable(const char* infile, const char* outfile, int stack
 	int cnt = startId;
 	while(fgets(buf,sizeof(buf),fin))
 	{
-		cout << buf;
 		split(buf, "\t\r\n", sents);
 		decodeTransTable(sents, stackSize, K, topSents);
 		int len = strlen(buf);

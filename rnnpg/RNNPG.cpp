@@ -13,11 +13,11 @@ using namespace std;
 #include "RNNPG.h"
 #include "xutil.h"
 
-//#ifndef M_LN10
-//#define M_LN10 2.30258509299404568402  /* log_e 10 */
-//#endif
-//
-//double exp10 (double arg) { return exp(M_LN10 * arg); }
+#ifndef M_LN10
+#define M_LN10 2.30258509299404568402  /* log_e 10 */
+#endif
+
+double exp10 (double arg) { return exp(M_LN10 * arg); }
 
 RNNPG::RNNPG()
 {
@@ -2862,8 +2862,6 @@ double RNNPG::computeNetContext(const char *lword, int startPos, const vector<st
 	int curPos = startPos, N = V + hiddenSize + hiddenSize;
 	for(size_t idx = 0; idx < words.size(); idx ++)
 	{
-		// cout << "word = " << words[idx] << endl;
-
 		copyNeurons(hiddenNeu, contextHiddenNeus[curPos], hiddenSize, 1);
 		matrixXvector(hiddenNeu, inNeu, hiddenInSyn, N, 0, hiddenSize, V + hiddenSize, V + hiddenSize + hiddenSize, 0);
 		for(i = 0; i < hiddenSize; i ++)
@@ -2892,7 +2890,6 @@ double RNNPG::computeNetContext(const char *lword, int startPos, const vector<st
 		// compute probs on words in the current class
 		int curWord = vocab.getVocabID(words[idx].c_str());
 
-		// cout << "curWord = " << curWord << endl;
 
 		if(curWord == -1)
 			curWord = vocab.getVocabID("<R>");

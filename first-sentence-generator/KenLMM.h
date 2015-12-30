@@ -14,6 +14,9 @@ using namespace std;
 #include "lm/model.hh"
 using namespace lm::ngram;
 
+
+#define  exp10(arg)  exp(M_LN10 * arg)
+
 class KenLMM
 {
 public:

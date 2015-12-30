@@ -20,18 +20,35 @@ void FirstSentenceGenerator::loadShixuehanying(const char* infile)
 		vector<string> fields;
 		split(buf, "\t\r\n", fields);
 		if(fields.size() != 3) continue;
-		set<string> s;
-		shixuehanyingDict[fields[1]] = s;
-		map<string,set<string> >::iterator iter = shixuehanyingDict.find(fields[1]);
+		//set<string> s;
+		//shixuehanyingDict[fields[1]] = s;
+		//map<string,set<string> >::iterator iter = shixuehanyingDict.find(fields[1]);
 		vector<string> words;
 		split(fields[2], "*", words);
-		for(size_t i = 0; i < words.size(); i ++)
-			iter->second.insert(words[i]);
+
+		for(size_t i = 0; i < words.size(); i ++){
+      vector<string> chars;
+      split(words[i], " ", chars);
+      
+      map<string,set<string> >::iterator iter = shixuehanyingDict.find(chars[0]);
+      if(iter == shixuehanyingDict.end()){
+        set<string> s;
+        s.insert(words[i]);
+        shixuehanyingDict[chars[0]] = s;
+      }
+      else{
+        iter->second.insert(words[i]);
+      }
+      if( ( (double)std::rand() ) / ( (double)RAND_MAX ) <= 1){
+        randomPhrase.push_back(words[i]);
+      }
+      //cout << "words[i]:" << words[i] << endl;
+    }
 	}
 	fclose(fin);
 
 	cout << "load shixuehanying done" << endl;
-	// printShixuehanying();
+	 //printShixuehanying();
 }
 
 void FirstSentenceGenerator::printShixuehanying()
@@ -48,29 +65,32 @@ void FirstSentenceGenerator::printShixuehanying()
 	}
 }
 
-void FirstSentenceGenerator::getCandidatePhrase(const vector<string> &keywords, vector<string> &candiPhrase)
+void FirstSentenceGenerator::getCandidatePhrase(const vector<string> &keywords, vector<string> &candiPhrase1)
 {
 	set<string> s;
 	size_t i;
-	for(i = 0; i < keywords.size(); i ++)
-	{
-		map<string,set<string> >::iterator iter = shixuehanyingDict.find(keywords[i]);
-		s.insert(iter->second.begin(), iter->second.end());
-	}
-	candiPhrase.clear();
-	candiPhrase.insert(candiPhrase.end(), s.begin(), s.end());
+	//for(i = 0; i < keywords.size(); i ++)
+	//{
+  map<string,set<string> >::iterator iter = shixuehanyingDict.find(keywords[0]);
+  s.insert(iter->second.begin(), iter->second.end());
+	//}
+	candiPhrase1.clear();
+	candiPhrase1.insert(candiPhrase1.end(), s.begin(), s.end());
 }
 
 void FirstSentenceGenerator::getFirstSentence(const vector<string> &keywords, int topK, int senLen, int stackSize, vector<string> &topSents)
 {
-	cout << "interploate weight" << endl;
-	cout << interpolateWeights[0] << " -- " << interpolateWeights[1] << endl;
-//	cout << "get first sentence " << endl;
 	topSents.clear();
-	vector<string> candiPhrase;
+	vector<string> candiPhrase1;
+	vector<string>& candiPhrase2 = randomPhrase;
+  //std::copy( randomPhrase.begin(), randomPhrase.end(), candiPhrase2.begin() );
 	int i, j, k;
-	getCandidatePhrase(keywords, candiPhrase);
-	sort(candiPhrase.begin(), candiPhrase.end(), phrlencmp);
+	getCandidatePhrase(keywords, candiPhrase1);
+
+  //vector<string>::iterator sIter;
+
+	sort(candiPhrase1.begin(), candiPhrase1.end(), phrlencmp);
+	sort(candiPhrase2.begin(), candiPhrase2.end(), phrlencmp);
 //	cout << "candi phrase size " << candiPhrase.size() << endl;
 //	for(i = 0; i < candiPhrase.size(); i ++)
 //		cout << candiPhrase[i] << endl;
@@ -89,12 +109,53 @@ void FirstSentenceGenerator::getFirstSentence(const vector<string> &keywords, in
 	vector<SenTP> firstSenPTs;
 	tp.getFirstSenTPs(senLen, firstSenPTs);
 
+/*
+  StackItem *nxItem = new StackItem(hiddenSize);
+
+  nxItem->tonalPattern = tonalPattern;
+  nxItem->validPos = validPos;
+  nxItem->curTPIdx = curTPIdx;
+
+  double rnnLogProb = rnnlm->computeNetPhrase(curItem->word.c_str(), curWords,
+      curItem->hiddenNeu, newHiddenNeu, rnnprobs);
+  double kenLogProb = getLMLogProb(curItem->curTrans, curWords, kn3probs);
+
+  nxItem->featVals[0] = curItem->featVals[0] + rnnLogProb;
+  nxItem->featVals[1] = curItem->featVals[1] + kenLogProb;
+
+  nxItem->interpolate(rnnprobs, kn3probs, interpolateWeights, curItem->cost);
+
+  nxItem->renewHiddenNeu(newHiddenNeu);
+  nxItem->posInSent = curItem->posInSent + curWords.size();
+  nxItem->word = curWords[curWords.size() - 1];
+
+  // .. record used phrase ..
+  nxItem->words = curItem->words;
+  nxItem->words.push_back(phrase);
+
+  nxItem->curTrans = curItem->curTrans;
+  for(int ii = 0; ii < (int)curWords.size(); ii ++)
+    nxItem->curTrans += " " + curWords[ii];
+
+  nxStack = stacks[i + curWords.size()];
+  nxStack->push(nxItem);
+  */
+
+
 	for(i = 0; i < senLen; i ++)
 	{
 		Stack *nxStack = NULL;
 		for(j = 0; j < stacks[i]->size(); j ++)
 		{
 			StackItem *curItem = stacks[i]->get(j);
+      vector<string> candiPhrase;
+      if(i < 2){
+        candiPhrase = candiPhrase1;
+      }
+      else{
+        candiPhrase = candiPhrase2;
+      }
+      
 			for(k = 0; k < (int)candiPhrase.size(); k ++)
 			{
 				string phrase = candiPhrase[k];
@@ -209,12 +270,8 @@ void FirstSentenceGenerator::getFirstSentence(const vector<string> &keywords, in
 	{
 		StackItem *sitem = stacks[senLen]->get(i);
 
-//		cout << "before ";
-//		printsvec(sitem->words);
 		if( this->constraints.isSegmentOK(sitem->words, senLen) )
 		{
-//			cout << "after ";
-//			printsvec(sitem->words);
 
 			string pureSent = removeS(sitem->curTrans);
 			string featValStr;

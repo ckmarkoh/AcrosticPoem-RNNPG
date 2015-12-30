@@ -13,11 +13,16 @@ using namespace std;
 #include "RNNPG.h"
 #include "xutil.h"
 
-//#ifndef M_LN10
-//#define M_LN10 2.30258509299404568402  /* log_e 10 */
+#ifndef M_LN10
+#define M_LN10 2.30258509299404568402  /* log_e 10 */
+#endif
+
+
+//#ifndef MY_EXP_10
+#define  exp10(arg)  exp(M_LN10 * arg)
 //#endif
-//
 //double exp10 (double arg) { return exp(M_LN10 * arg); }
+
 
 RNNPG::RNNPG()
 {

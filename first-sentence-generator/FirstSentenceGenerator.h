@@ -30,12 +30,6 @@ public:
 		rnnlm = NULL;
 		kenlm = NULL;
 		hiddenSize = 0;
-		cout << "interpolate weights " << endl;
-		for(int i = 0; i < FEATURE_SIZE; i ++)
-		{
-			interpolateWeights[i] = (double)1 / FEATURE_SIZE;
-			cout << interpolateWeights[i] << endl;
-		}
 	}
 	void setRNNLM(CRnnLM *_rnnlm) { rnnlm = _rnnlm; hiddenSize = rnnlm->getHiddenSize(); }
 	void setKenLM(KenLMM *_kenlm) { kenlm = _kenlm; }
@@ -46,7 +40,7 @@ public:
 	}
 	void loadShixuehanying(const char *infile);
 	void loadPingShuiYun(const char *infile);
-	void getCandidatePhrase(const vector<string> &keywords, vector<string> &candiPhrase);
+	void getCandidatePhrase(const vector<string> &keywords, vector<string> &candiPhrase1);
 	void printShixuehanying();
 	void getFirstSentence(const vector<string> &keywords, int topK, int senLen, int MAX_STACK_SIZE, vector<string> &topSents);
 private:
@@ -55,6 +49,9 @@ private:
 	int hiddenSize;
 
 	map<string,set<string> > shixuehanyingDict;
+
+
+		vector<string> randomPhrase;
 
 	enum FSIZE{FEATURE_SIZE = 2};
 	double interpolateWeights[FEATURE_SIZE];
@@ -357,6 +354,7 @@ private:
 		typedef pair<double,int> P;
 		priority_queue<P, vector<P>, greater<P> > pq;
 		map<string,int> transIndex;
+    
 	};
 };
 

@@ -22,6 +22,8 @@ using namespace std;
 #include "Vocab.h"
 #include "WordEmbedding.h"
 
+
+
 // the fast exp() implementation is from Tomas Mikolov's toolkit, rnnlm-0.2b
 ///// fast exp() implementation
 static union{
